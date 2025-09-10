@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+spacy
+transformers
+torch        # required by Hugging Face
+networkx
+pydantic
+python-docx
+PyMuPDF      # PDF parsing
