@@ -7,3 +7,4 @@ networkx
 pydantic
 python-docx
 PyMuPDF      # PDF parsing
+python-multipart
