@@ -9,7 +9,7 @@ import tippy from "tippy.js";
 import cytoscapePopper from "cytoscape-popper";
 import clsx from "clsx";
 
-function tippyFactory(ref, content) {
+function tippyFactory(ref: any, content: any) {
   var dummyDomEle = document.createElement("div");
   var tip = tippy(dummyDomEle, {
     getReferenceClientRect: ref.getBoundingClientRect,
@@ -194,40 +194,19 @@ const GraphViewerPage: React.FC = () => {
         {!loading && !error && elements.length > 0 && (
           <CytoscapeComponent
             zoomingEnabled={true}
-            minZoom={0.5}
-            maxZoom={3}
-            zoom={0.5}
+            minZoom={0.1}
+            maxZoom={10}
+            zoom={1}
             elements={CytoscapeComponent.normalizeElements(elements)}
             layout={{
-              name: "cose-bilkent",
-              refresh: 30,
-              fit: true,
-              padding: 50,
-              randomize: true,
-              nodeRepulsion: 8000,
-              idealEdgeLength: 120,
-              edgeElasticity: 0.45,
-              nestingFactor: 0.1,
-              gravity: 0.25,
-              numIter: 2500,
-              tile: true,
-              animate: "end",
-              animationDuration: 1000,
-              tilingPaddingVertical: 20,
-              tilingPaddingHorizontal: 20,
-              gravityRangeCompound: 1.5,
-              gravityCompound: 1.0,
-              gravityRange: 3.8,
-              initialEnergyOnIncremental: 0.5,
+              name: "preset",
+              positions: () => {
+                return {x:0,y:0}; // use existing positions if available
+              }
             }}
             style={{ width: "100%", height: "100%", background: "#f0f0f0" }}
             cy={(cy) => {
-              console.log(
-                cy.minZoom(),
-                cy.maxZoom(),
-                cy.zoomingEnabled(),
-                cy.pan()
-              );
+              
               // Attach tooltips
               cy.nodes().forEach((node) => {
                 const desc = node.data("description");
