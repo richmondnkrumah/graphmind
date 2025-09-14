@@ -199,10 +199,7 @@ const GraphViewerPage: React.FC = () => {
             zoom={1}
             elements={CytoscapeComponent.normalizeElements(elements)}
             layout={{
-              name: "preset",
-              positions: () => {
-                return {x:0,y:0}; // use existing positions if available
-              }
+              name: "cose-bilkent",
             }}
             style={{ width: "100%", height: "100%", background: "#f0f0f0" }}
             cy={(cy) => {
