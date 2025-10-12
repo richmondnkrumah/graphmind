@@ -5,7 +5,6 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import UploadPage from './pages/UploadPage'
 import GraphViewerPage from './pages/GraphViewerPage'
-
 import './App.css'
 
 const queryClient = new QueryClient({
