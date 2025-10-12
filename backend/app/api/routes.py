@@ -3,11 +3,17 @@ from typing import List
 from fastapi import UploadFile, APIRouter, File, HTTPException
 from app.services.file_parser import parse_file
 from app.services.preprocess import preprocess_document
-from app.services.neo4j import save_document, get_document, run_query, save_entities
-
+from app.services.neo4j import save_document, save_entities
 from fastapi import APIRouter, HTTPException
 from neo4j import GraphDatabase
+import os
+
+NEO4J_URL = os.environ.get("NEO4J_URI")
+NEO4J_USER = os.environ.get("NEO4J_USER")
+NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD")
+
 router = APIRouter()
+driver = GraphDatabase.driver("neo4j://127.0.0.1:7687", auth=("neo4j", "set3password"))
 
 @router.post("/upload")
 async def upload_documents(files: List[UploadFile] = File(...)):
@@ -24,13 +30,13 @@ async def upload_documents(files: List[UploadFile] = File(...)):
         text = await parse_file(file)
 
         # 2. Save the raw document
-        doc_id = save_document(file.filename, text)
+        doc_id = save_document(file.filename, text,driver)
 
         # 3. Preprocess document with spaCy (chunks + entities)
         result = preprocess_document(text)
 
         # 4. Save entities linked to this document
-        save_entities(doc_id, result["entities"])
+        save_entities(doc_id, result["entities"],driver)
 
         results.append({
             "id": doc_id,
@@ -41,28 +47,6 @@ async def upload_documents(files: List[UploadFile] = File(...)):
 
     return {"documents": results}
 
-# @router.post("/preprocess/{doc_id}")
-# async def preprocess(doc_id: str):
-#     """
-#     Fetch raw text from Neo4j by doc_id, preprocess with spaCy,
-#     store entities back into Neo4j.
-#     """
-#     document = get_document(doc_id)
-#     if not document:
-#         raise HTTPException(status_code=404, detail="Document not found.")
-
-#     result = preprocess_document(document["content"])
-#     save_entities(doc_id, result["entities"])
-
-#     return {
-#         "doc_id": doc_id,
-#         "chunks_preview": result["chunks"][:3],
-#         "entities_preview": result["entities"][:10]  # first 10 entities
-#     }
-
-
-
-driver = GraphDatabase.driver("neo4j://127.0.0.1:7687", auth=("neo4j", "set3password"))
 
 
 @router.get("/graph/{doc_id}")
