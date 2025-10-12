@@ -4,8 +4,7 @@ import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Progress } from "../components/ui/progress";
-import { toast } from "sonner"; // direct import from sonner
-
+import { toast } from "sonner";
 interface FileItem {
   file: File;
   id: string;
@@ -122,22 +121,22 @@ const UploadPage: React.FC = () => {
           state: { docId: result.documents[0].id }
         });
       }, 1500);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Processing error:", error);
       setFiles((prev) =>
         prev.map((file) => ({ ...file, status: "error" as const }))
       );
-      toast.error(
-        "There was an error processing your documents. Please try again."
-      );
+      if(error instanceof Error && error.message.includes("NetworkError")) {
+        toast.error("Network error: Please ensure the backend server is running.");
+      } else {
+        toast.error("There was an error processing your documents. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const getFileIcon = (file: File) => {
-    return <FileText className="h-6 w-6 text-blue-600" />;
-  };
+
 
   const getStatusIcon = (status: FileItem["status"]) => {
     switch (status) {
@@ -222,7 +221,7 @@ const UploadPage: React.FC = () => {
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                   >
                     <div className="flex items-center space-x-3">
-                      {getFileIcon(fileItem.file)}
+                      <FileText className="h-6 w-6 text-blue-600" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">
                           {fileItem.file.name}
