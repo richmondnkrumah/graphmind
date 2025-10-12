@@ -80,7 +80,8 @@ const GraphViewerPage: React.FC = () => {
           setActiveDocId(data[0].id);
         }
       } catch (err: unknown) {
-        if (err instanceof Error && err.message.includes("Failed to fetch")) {
+        console.log(err)
+        if (err instanceof Error && (err.message.includes("Failed to fetch") || err.message.includes("NetworkError"))) {
           setError(
             "Failed to fetch documents. Please ensure the backend server is running."
           );
