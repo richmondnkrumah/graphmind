@@ -1,11 +1,7 @@
-from neo4j import GraphDatabase
+from neo4j import Driver
 import uuid
 
-
-# Connect to Neo4j
-driver = GraphDatabase.driver("neo4j://127.0.0.1:7687", auth=("neo4j", "set3password"))
-
-def save_document(filename: str, content: str) -> str:
+def save_document(filename: str, content: str,driver: Driver) -> str:
     doc_id = str(uuid.uuid4())
     with driver.session() as session:
         session.run(
@@ -14,15 +10,7 @@ def save_document(filename: str, content: str) -> str:
         )
     return doc_id
 
-def get_document(doc_id: str):
-    with driver.session() as session:
-        result = session.run("MATCH (d:Document {id:$id}) RETURN d", id=doc_id).single()
-        if result:
-            node = result["d"]
-            return {"id": node["id"], "filename": node["filename"], "content": node["content"]}
-        return None
-
-def save_entities(doc_id: str, entities: list):
+def save_entities(doc_id: str, entities: list,driver: Driver):
     with driver.session() as session:
         for ent in entities:
             session.run(
@@ -33,13 +21,3 @@ def save_entities(doc_id: str, entities: list):
                 """,
                 doc_id=doc_id, text=ent["text"], label=ent["label"]
             )
-def run_query(query: str, parameters: dict = None) -> list[dict]:
-    
-    
-    
-    """
-    Execute Cypher query and return list of records as dicts.
-    """
-    with driver.session() as session:
-        result = session.run(query, parameters or {})
-        return [dict(record) for record in result]
