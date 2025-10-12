@@ -8,7 +8,6 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
-
   const isActive = (path: string) => location.pathname === path;
 
   return (
